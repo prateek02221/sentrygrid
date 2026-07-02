@@ -1,8 +1,11 @@
 from fastapi import (
     APIRouter,
     Depends,
+    Request,
     status
 )
+
+from app.core.limiter import limiter
 
 from app.schemas.user_schema import (
     UserRegister,
@@ -65,7 +68,9 @@ all_roles = RoleChecker(
     response_model=UserResponse,
     status_code=status.HTTP_201_CREATED
 )
+@limiter.limit("10/hour")
 async def register_user(
+    request: Request,
     user: UserRegister
 ):
     return await register_user_service(user)
@@ -74,7 +79,9 @@ async def register_user(
     "/login",
     response_model=TokenResponse
 )
+@limiter.limit("5/minute")
 async def login_user(
+    request: Request,
     user: UserLogin
 ):
     return await login_user_service(user)
