@@ -13,6 +13,7 @@ Simulated threat events flow through a detection engine, escalate into incidents
 | | |
 |---|---|
 | 🔐 **JWT Auth + RBAC** | Access + refresh tokens, with Admin / Security Analyst / Viewer roles enforced end-to-end |
+| 🚫 **Brute-Force Protection** | IP-aware rate limiting on login/register, correctly resolving real visitor IPs behind a reverse proxy |
 | ⚙️ **Synthetic Threat Engine** | Rule-based detection with severity scoring, IOC matching, and brute-force escalation scoped by source IP + time window |
 | 🤖 **Autonomous Threat Generation** | APScheduler runs the detection pipeline on a configurable interval — the dashboard stays alive with activity, no manual triggering needed |
 | 📋 **Incident Lifecycle** | Open → Investigating → Resolved, with analyst notes at every stage |
@@ -20,6 +21,53 @@ Simulated threat events flow through a detection engine, escalate into incidents
 | 🎯 **IOC Management** | Track and match Indicators of Compromise against incoming threats |
 | 📊 **Threat Intelligence Analytics** | Top malicious IPs, threat-type distribution, and rollup summaries at a glance |
 | 👥 **User Management** | Create, disable, delete users and change roles — admin-only control panel |
+
+---
+
+## 📸 Screenshots
+
+<!--
+  Add your own screenshots here before publishing. Save images to a
+  `docs/screenshots/` folder in your repo, then update the paths below
+  to match. GitHub renders these inline on the repo homepage.
+-->
+
+| Login | Dashboard |
+|---|---|
+| ![Login screen](./docs/screenshots/login.png) | ![Dashboard](./docs/screenshots/dashboard.png) |
+
+| Incidents | User Management |
+|---|---|
+| ![Incidents page](./docs/screenshots/incidents.png) | ![User Management](./docs/screenshots/user-management.png) |
+
+---
+
+## 🏗️ Architecture
+
+```mermaid
+flowchart LR
+    subgraph Client
+        UI[React Dashboard]
+    end
+
+    subgraph Server["FastAPI Backend (Render)"]
+        API[REST API]
+        WS[WebSocket Hub]
+        SCHED[APScheduler]
+        DETECT[Detection Pipeline]
+    end
+
+    DB[(MongoDB Atlas)]
+
+    UI -- "HTTPS / REST" --> API
+    UI <-- "Live push" --> WS
+    API --> DB
+    SCHED -- "every N hours" --> DETECT
+    DETECT --> DB
+    DETECT -- "new threat/incident" --> WS
+```
+
+**How it flows:** the scheduler triggers the detection pipeline on an interval, which scores and matches synthetic threat events against IOCs, escalates qualifying ones into incidents, and pushes updates over WebSocket to every connected dashboard in real time — no polling, no manual refresh needed. All reads/writes go through the FastAPI backend, which enforces JWT auth and role checks before touching MongoDB.
 
 ---
 
