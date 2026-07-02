@@ -56,7 +56,7 @@ export default function Login() {
               <span className="text-teal-300 text-sm font-bold font-display">S</span>
             </div>
             <span className="text-white text-lg font-bold font-display tracking-tight">
-              Mini SOC
+              SentryGrid
             </span>
           </div>
 
@@ -65,7 +65,7 @@ export default function Login() {
           </h1>
 
           <p className="text-slate-400 text-base leading-relaxed max-w-md">
-            Mini SOC brings threat detection, incident response, and threat
+            SentryGrid brings threat detection, incident response, and threat
             intelligence into a single real-time workspace. Built for analysts
             who need clarity under pressure — every alert, IOC, and incident
             tracked from first detection to resolution.
@@ -122,7 +122,7 @@ export default function Login() {
               <span className="text-teal-600 text-xl font-bold font-display">S</span>
             </div>
             <h1 className="text-xl font-bold text-slate-900 font-display tracking-tight">
-              Mini SOC
+              SentryGrid
             </h1>
           </div>
 

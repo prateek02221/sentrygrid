@@ -143,7 +143,7 @@ export default function Dashboard() {
               LIVE OPERATIONS FEED
             </p>
             <h2 className="text-2xl font-bold text-slate-900 font-display">
-              Mini SOC Command Center
+              SentryGrid Command Center
             </h2>
             <p className="text-slate-500 text-sm mt-1">
               Real-time threat detection &amp; incident management

@@ -53,7 +53,7 @@ attempt through.
 
 | Field | Value |
 |---|---|
-| **Name** | `mini-soc-platform` (or anything you like) |
+| **Name** | `sentrygrid` (or anything you like) |
 | **Region** | closest to you |
 | **Branch** | `main` |
 | **Root Directory** | leave blank (repo root) |
@@ -83,7 +83,7 @@ In the Render dashboard, under **Environment**, add these (copy values from your
 
 | Key | Value |
 |---|---|
-| `APP_NAME` | Mini SOC Platform |
+| `APP_NAME` | SentryGrid |
 | `APP_VERSION` | 1.0.0 |
 | `DEBUG` | false |
 | `API_PREFIX` | /api/v1 |
@@ -94,7 +94,7 @@ In the Render dashboard, under **Environment**, add these (copy values from your
 | `JWT_ALGORITHM` | HS256 |
 | `ACCESS_TOKEN_EXPIRE_MINUTES` | 30 |
 | `REFRESH_TOKEN_EXPIRE_DAYS` | 7 |
-| `ALLOWED_ORIGINS` | your Render URL once known, e.g. `https://mini-soc-platform.onrender.com` (comma-separate if you need more than one) |
+| `ALLOWED_ORIGINS` | your Render URL once known, e.g. `https://sentrygrid.onrender.com` (comma-separate if you need more than one) |
 | `AUTO_THREAT_GENERATION_ENABLED` | true |
 | `AUTO_THREAT_GENERATION_INTERVAL_HOURS` | 2 |
 

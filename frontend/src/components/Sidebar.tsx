@@ -89,7 +89,7 @@ export default function Sidebar({ collapsed }: SidebarProps) {
         </div>
         {!collapsed && (
           <h1 className="text-white text-lg font-bold font-display tracking-tight whitespace-nowrap">
-            Mini SOC
+            SentryGrid
           </h1>
         )}
       </div>

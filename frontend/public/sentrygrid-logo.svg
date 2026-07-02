@@ -1,0 +1,61 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gridGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2dd4bf"/>
+      <stop offset="100%" stop-color="#0f766e"/>
+    </linearGradient>
+    <radialGradient id="eyeGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#5eead4" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#5eead4" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Outer hex frame representing a network node / grid cell -->
+  <path d="M128 16
+           L216 66
+           V166
+           L128 216
+           L40 166
+           V66
+           Z"
+        fill="none"
+        stroke="url(#gridGradient)"
+        stroke-width="6"
+        stroke-linejoin="round"/>
+
+  <!-- Grid lines crossing through the hex, evoking a monitored network -->
+  <g stroke="#2dd4bf" stroke-width="2" stroke-opacity="0.5">
+    <line x1="40" y1="66" x2="216" y2="166"/>
+    <line x1="40" y1="166" x2="216" y2="66"/>
+    <line x1="128" y1="16" x2="128" y2="216"/>
+    <line x1="40" y1="116" x2="216" y2="116"/>
+  </g>
+
+  <!-- Small corner nodes at grid intersections -->
+  <g fill="#5eead4">
+    <circle cx="40" cy="66" r="4"/>
+    <circle cx="216" cy="66" r="4"/>
+    <circle cx="40" cy="166" r="4"/>
+    <circle cx="216" cy="166" r="4"/>
+    <circle cx="128" cy="16" r="4"/>
+    <circle cx="128" cy="216" r="4"/>
+  </g>
+
+  <!-- Glow behind central sentry eye -->
+  <circle cx="128" cy="116" r="46" fill="url(#eyeGlow)" opacity="0.35"/>
+
+  <!-- Sentry eye: outer lens ring -->
+  <ellipse cx="128" cy="116" rx="44" ry="28" fill="#0b1220" stroke="url(#gridGradient)" stroke-width="5"/>
+
+  <!-- Iris -->
+  <circle cx="128" cy="116" r="17" fill="url(#gridGradient)"/>
+
+  <!-- Pupil / watch node -->
+  <circle cx="128" cy="116" r="7" fill="#ffffff"/>
+
+  <!-- Radar sweep tick marks around the eye, implying active scanning -->
+  <g stroke="#5eead4" stroke-width="3" stroke-linecap="round" stroke-opacity="0.8">
+    <line x1="128" y1="78" x2="128" y2="86"/>
+    <line x1="128" y1="146" x2="128" y2="154"/>
+  </g>
+</svg>

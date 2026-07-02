@@ -1,0 +1,55 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="shieldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#14b8a6"/>
+      <stop offset="100%" stop-color="#0d9488"/>
+    </linearGradient>
+    <radialGradient id="pulseGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#5eead4" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#5eead4" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Shield -->
+  <path d="M128 20
+           L208 52
+           V120
+           C208 176 176 216 128 236
+           C80 216 48 176 48 120
+           V52
+           Z"
+        fill="url(#shieldGradient)"
+        stroke="#0f766e"
+        stroke-width="4"/>
+
+  <!-- Inner shield outline for depth -->
+  <path d="M128 34
+           L196 61
+           V120
+           C196 168 170 202 128 220
+           C86 202 60 168 60 120
+           V61
+           Z"
+        fill="none"
+        stroke="#5eead4"
+        stroke-width="2"
+        stroke-opacity="0.5"/>
+
+  <!-- Radar sweep ring -->
+  <circle cx="128" cy="126" r="46" fill="none" stroke="#e6fffa" stroke-width="2" stroke-opacity="0.35"/>
+  <circle cx="128" cy="126" r="30" fill="none" stroke="#e6fffa" stroke-width="2" stroke-opacity="0.45"/>
+
+  <!-- Pulse glow behind the waveform -->
+  <circle cx="128" cy="126" r="40" fill="url(#pulseGlow)"/>
+
+  <!-- Security pulse / heartbeat line -->
+  <path d="M78 126 H104 L114 100 L128 152 L140 126 H178"
+        fill="none"
+        stroke="#ffffff"
+        stroke-width="7"
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+
+  <!-- Center node dot -->
+  <circle cx="128" cy="152" r="5.5" fill="#ffffff"/>
+</svg>

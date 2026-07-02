@@ -174,7 +174,7 @@ else:
     @app.get("/")
     def root():
         return {
-            "message": "Mini SOC Platform Backend Running",
+            "message": "SentryGrid Backend Running",
             "version": settings.APP_VERSION,
             "status": "success"
         }
