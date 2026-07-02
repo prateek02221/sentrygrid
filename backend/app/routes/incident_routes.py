@@ -16,6 +16,7 @@ all_roles = RoleChecker(["admin", "security_analyst", "viewer"])
 analyst_or_admin = RoleChecker(["admin", "security_analyst"])
 
 
+@router.get("")
 @router.get("/")
 async def get_all_incidents(current_user=Depends(all_roles)):
     db = get_database()

@@ -41,9 +41,9 @@ export default function UserManagement() {
 
   const fetchUsers = async () => {
     try {
-      const res = await api.get("/users");
+      const res = await api.get("/users/");
       console.log("Users After Refresh:", res.data);
-      setUsers(res.data);
+      setUsers(Array.isArray(res.data) ? res.data : []);
     } catch (error) {
       console.error(error);
       toast.error(getErrorMessage(error));

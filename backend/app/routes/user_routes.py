@@ -31,6 +31,7 @@ admin_only = RoleChecker(
 )
 
 
+@router.get("")
 @router.get("/")
 async def get_all_users(
     current_user=Depends(admin_only)

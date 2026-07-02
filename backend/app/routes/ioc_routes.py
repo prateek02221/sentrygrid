@@ -22,6 +22,7 @@ admin_or_analyst = RoleChecker(
 )
 
 
+@router.post("")
 @router.post("/")
 async def create_ioc(
     data: IOCCreate,
@@ -30,6 +31,7 @@ async def create_ioc(
     return await create_ioc_service(data)
 
 
+@router.get("")
 @router.get("/")
 async def get_all_iocs(
     user=Depends(admin_or_analyst)

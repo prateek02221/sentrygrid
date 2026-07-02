@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { api, getWebSocketUrl } from "../services/api";
+import { api, getWebSocketUrl, getErrorMessage } from "../services/api";
 import toast from "react-hot-toast";
 import IncidentModal from "../components/IncidentModal";
 
@@ -55,10 +55,11 @@ export default function Incidents() {
 
   const loadIncidents = async () => {
     try {
-      const response = await api.get("/incidents");
-      setIncidents(response.data);
+      const response = await api.get("/incidents/");
+      setIncidents(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       console.error(error);
+      toast.error(getErrorMessage(error));
     }
   };
 

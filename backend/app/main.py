@@ -1,3 +1,4 @@
+import logging
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -5,6 +6,14 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException as StarletteHTTPException
+
+# Without this, Python's logging module silently drops INFO-level messages
+# (like the scheduler's "Auto-generated threat ..." logs) since nothing else
+# in the app configures a log level or handler.
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+)
 
 from app.routes.auth_routes import router as auth_router
 from app.routes.threat_routes import router as threat_router
@@ -27,12 +36,6 @@ from app.core.database import (
 )
 
 from app.core.scheduler import start_scheduler, stop_scheduler
-
-import logging
-logging.basicConfig(
-       level=logging.INFO,
-       format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
-   )
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -139,7 +142,20 @@ STATIC_DIR = Path(__file__).resolve().parent / "static"
 
 
 class SPAStaticFiles(StaticFiles):
+    # Paths that must never fall back to index.html, even on a 404 or a
+    # near-miss (e.g. a missing trailing slash). Without this, a mismatched
+    # or mistyped API call would silently get back an HTML page instead of
+    # a clear error - exactly the trailing-slash bug this app hit in
+    # production, where /api/v1/incidents (no slash) was swallowed by this
+    # mount instead of being redirected to /api/v1/incidents/ by FastAPI.
+    RESERVED_PREFIXES = (
+        "api/", "health", "docs", "redoc", "openapi.json", "ws/"
+    )
+
     async def get_response(self, path: str, scope):
+        if path.startswith(self.RESERVED_PREFIXES):
+            raise StarletteHTTPException(status_code=404)
+
         try:
             return await super().get_response(path, scope)
         except StarletteHTTPException as exc:

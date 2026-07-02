@@ -24,11 +24,11 @@ async def get_all_users_service():
         users.append(
             {
                 "id": str(user["_id"]),
-                "name": user["name"],
-                "email": user["email"],
-                "role": user["role"],
-                "is_active": user["is_active"],
-                "created_at": user["created_at"],
+                "name": user.get("name", ""),
+                "email": user.get("email", ""),
+                "role": user.get("role", "viewer"),
+                "is_active": user.get("is_active", True),
+                "created_at": user.get("created_at"),
                 "last_login": user.get(
                     "last_login"
                 )
@@ -58,11 +58,11 @@ async def get_user_by_id_service(
 
     return {
         "id": str(user["_id"]),
-        "name": user["name"],
-        "email": user["email"],
-        "role": user["role"],
-        "is_active": user["is_active"],
-        "created_at": user["created_at"],
+        "name": user.get("name", ""),
+        "email": user.get("email", ""),
+        "role": user.get("role", "viewer"),
+        "is_active": user.get("is_active", True),
+        "created_at": user.get("created_at"),
         "last_login": user.get(
             "last_login"
         )

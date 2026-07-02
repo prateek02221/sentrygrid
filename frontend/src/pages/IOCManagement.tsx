@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { api } from "../services/api";
+import { api, getErrorMessage } from "../services/api";
+import toast from "react-hot-toast";
 
 interface IOC {
   value: string;
@@ -23,15 +24,11 @@ export default function IOCManagement() {
 
   const fetchIOCs = async () => {
     try {
-      const token = localStorage.getItem("access_token");
-
-      const res = await api.get("/iocs", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      setIocs(res.data);
+      const res = await api.get("/iocs/");
+      setIocs(Array.isArray(res.data) ? res.data : []);
     } catch (error) {
       console.error(error);
+      toast.error(getErrorMessage(error));
     }
   };
 
@@ -39,16 +36,13 @@ export default function IOCManagement() {
     e.preventDefault();
 
     try {
-      const token = localStorage.getItem("access_token");
-
-      await api.post("/iocs", form, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await api.post("/iocs/", form);
 
       setForm({ value: "", type: "", threat_level: "", description: "" });
       fetchIOCs();
     } catch (error) {
       console.error(error);
+      toast.error(getErrorMessage(error));
     }
   };
 
