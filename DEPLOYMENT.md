@@ -1,132 +1,105 @@
-# Deployment Guide — Render + MongoDB Atlas
+# 🛡️ Mini SOC Platform
 
-This deploys the whole project (frontend + backend) as a **single live service** on Render.
-FastAPI serves both the API and the built React app from the same URL — no separate frontend
-host, no CORS headaches, one thing to keep running.
+> A mini Security Operations Center — watch threats spawn, escalate, and get triaged in real time.
 
-You already have MongoDB Atlas set up, so this guide starts from "push to GitHub."
+Simulated threat events flow through a detection engine, escalate into incidents, and get triaged by role-based analysts on a live-updating React dashboard. Think of it as a pocket-sized SOC: the kind of pipeline real security teams run, scaled down to something you can spin up and demo in minutes.
+
+**🔗 Live demo:** [mini-soc-platform.onrender.com](https://mini-soc-platform.onrender.com)
 
 ---
 
-## 1. Push the project to GitHub
+## ✨ Features
 
-Make sure your repo has this structure at the root (not double-nested):
-
-```
-your-repo/
-├── backend/
-├── frontend/
-├── README.md
-└── DEPLOYMENT.md
-```
-
-```bash
-git init
-git add .
-git commit -m "Initial commit"
-git branch -M main
-git remote add origin https://github.com/<your-username>/<your-repo>.git
-git push -u origin main
-```
-
-Double check `backend/.env` and `frontend/.env` (if any) are **not** committed — they're
-already covered by `.gitignore`, but it's worth confirming with `git status` before your first
-push. `backend/.env.example` and `frontend/.env.development` (no secrets in either) are fine to
-commit.
-
-## 2. MongoDB Atlas — allow Render to connect
-
-Render's outbound IPs aren't fixed on the free tier, so in Atlas:
-
-1. Go to **Network Access** → **Add IP Address**
-2. Choose **Allow Access from Anywhere** (`0.0.0.0/0`)
-
-This is the standard approach for platforms with dynamic egress IPs (Render, Vercel, etc.) —
-your database is still protected by its username/password, this just allows the connection
-attempt through.
-
-## 3. Create the Render Web Service
-
-1. Go to [render.com](https://render.com) → **New** → **Web Service**
-2. Connect your GitHub repo
-3. Configure:
-
-| Field | Value |
+| | |
 |---|---|
-| **Name** | `mini-soc-platform` (or anything you like) |
-| **Region** | closest to you |
-| **Branch** | `main` |
-| **Root Directory** | leave blank (repo root) |
-| **Runtime** | Python 3 |
-| **Build Command** | see below |
-| **Start Command** | see below |
-| **Instance Type** | Free |
+| 🔐 **JWT Auth + RBAC** | Access + refresh tokens, with Admin / Security Analyst / Viewer roles enforced end-to-end |
+| ⚙️ **Synthetic Threat Engine** | Rule-based detection with severity scoring, IOC matching, and brute-force escalation scoped by source IP + time window |
+| 🤖 **Autonomous Threat Generation** | APScheduler runs the detection pipeline on a configurable interval — the dashboard stays alive with activity, no manual triggering needed |
+| 📋 **Incident Lifecycle** | Open → Investigating → Resolved, with analyst notes at every stage |
+| ⚡ **Real-Time Updates** | WebSocket push means new threats and incidents appear instantly on every connected dashboard |
+| 🎯 **IOC Management** | Track and match Indicators of Compromise against incoming threats |
+| 📊 **Threat Intelligence Analytics** | Top malicious IPs, threat-type distribution, and rollup summaries at a glance |
+| 👥 **User Management** | Create, disable, delete users and change roles — admin-only control panel |
 
-**Build Command:**
-```bash
-cd frontend && npm install && npm run build && cd ../backend && rm -rf app/static && cp -r ../frontend/dist app/static && pip install -r requirements.txt
+---
+
+## 🧰 Tech Stack
+
+**Backend**
+`FastAPI` · `Motor` (async MongoDB driver) · `Pydantic` · `JWT` · `APScheduler`
+
+**Frontend**
+`React` + `TypeScript` · `Vite` · `Tailwind CSS` · `Chart.js`
+
+**Database**
+`MongoDB Atlas`
+
+---
+
+## 📁 Project Structure
+
+```
+.
+├── backend/              FastAPI app
+│   ├── app/
+│   ├── requirements.txt
+│   └── .env.example
+├── frontend/             React + Vite app
+│   ├── src/
+│   └── package.json
+└── DEPLOYMENT.md         Step-by-step deploy guide (Render + MongoDB Atlas)
 ```
 
-**Start Command:**
+---
+
+## 🚀 Running Locally
+
+### 1. Backend
+
 ```bash
-cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+cd backend
+python -m venv venv
+source venv/bin/activate      # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+cp .env.example .env          # fill in your MongoDB Atlas URL and JWT secrets
+uvicorn app.main:app --reload
 ```
 
-This build command does three things in order: builds the React app, copies the build output
-into `backend/app/static` (where FastAPI is configured to serve it from), then installs the
-Python dependencies.
+The API comes alive at `http://127.0.0.1:8000` — interactive Swagger docs live at `http://127.0.0.1:8000/docs`.
 
-## 4. Environment variables
+### 2. Frontend
 
-In the Render dashboard, under **Environment**, add these (copy values from your local
-`backend/.env`):
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-| Key | Value |
-|---|---|
-| `APP_NAME` | Mini SOC Platform |
-| `APP_VERSION` | 1.0.0 |
-| `DEBUG` | false |
-| `API_PREFIX` | /api/v1 |
-| `MONGODB_URL` | your Atlas connection string |
-| `DATABASE_NAME` | your database name |
-| `JWT_SECRET_KEY` | a long random string |
-| `JWT_REFRESH_SECRET_KEY` | a different long random string |
-| `JWT_ALGORITHM` | HS256 |
-| `ACCESS_TOKEN_EXPIRE_MINUTES` | 30 |
-| `REFRESH_TOKEN_EXPIRE_DAYS` | 7 |
-| `ALLOWED_ORIGINS` | your Render URL once known, e.g. `https://mini-soc-platform.onrender.com` (comma-separate if you need more than one) |
-| `AUTO_THREAT_GENERATION_ENABLED` | true |
-| `AUTO_THREAT_GENERATION_INTERVAL_HOURS` | 2 |
+The dashboard runs at `http://127.0.0.1:5173`, talking to the backend via `VITE_API_URL` (already wired up in `.env.development` for local dev).
 
-Note on `ALLOWED_ORIGINS`: since the frontend and API are served from the same Render URL in
-this setup, the browser calls are same-origin and CORS doesn't block them even before you set
-this correctly. It mainly matters if you ever call the API from a different origin (e.g.
-testing locally against the live backend). Deploy once first, grab your Render URL from the
-dashboard, then update this variable and let it redeploy.
+---
 
-## 5. Deploy
+## ☁️ Deploying
 
-Click **Create Web Service**. Render will build and deploy — first build takes a few minutes
-(npm install + build + pip install). Watch the build logs; if the build command fails, the
-error will point at exactly which step (npm, static copy, or pip).
+This project is built to ship as a **single service** — the FastAPI backend serves the built React frontend directly, so there's nothing extra to host or coordinate.
 
-Once live, your app is reachable at `https://<your-service-name>.onrender.com` — that one URL
-serves the dashboard, the API (under `/api/v1`), the docs (`/docs`), and the websocket
-(`/ws/alerts`).
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for the full walkthrough: Render + MongoDB Atlas, start to finish.
 
-## 6. Known free-tier behavior
+---
 
-Render's free web services **spin down after ~15 minutes of inactivity** and take 30–50 seconds
-to wake up on the next request. This is expected — fine for a portfolio/demo project, just know
-the first click after idle will feel slow. Nothing is broken.
+## 🔄 Auto Threat Generation
 
-Also note: while the service is spun down, the background auto-threat-generation scheduler
-isn't running either (nothing is, the whole process is asleep). It resumes ticking once a
-request wakes the service back up. For a demo project this is a reasonable trade-off for free
-hosting; if you ever need guaranteed-uptime scheduling, that's a paid-tier consideration, not
-something to solve for now.
+No need to babysit the demo — the pipeline keeps itself busy. Controlled via backend env vars:
 
-## 7. Redeploying after changes
+```env
+AUTO_THREAT_GENERATION_ENABLED=true
+AUTO_THREAT_GENERATION_INTERVAL_HOURS=2
+```
 
-Render auto-deploys on every push to your connected branch by default. Just `git push`, and
-watch the deploy logs in the Render dashboard.
+On every interval, the same detection pipeline behind the manual "Generate Threat" button fires automatically in the background — so the dashboard shows genuine, ongoing activity even when nobody's at the keyboard.
+
+---
+
+<p align="center">
+  Built as a hands-on dive into async APIs, real-time systems, and role-based security architecture.
+</p>
